@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        body {
+            font-family: sans-serif;
+            font-size: 18px;
+            font-weight: 500;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin: 0;
+        }
+
+        .db,
+        .col {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .nav {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .wybranaBaza {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .addDB {
+            padding: 5px;
+            border-radius: 10px;
+            background-color: rgb(60, 31, 141);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.8s ease all;
+        }
+
+        .addDB:hover {
+            background-color: white;
+            color: rgb(60, 31, 141);
+        }
+
+        .removeDB {
+            padding: 5px;
+            border-radius: 10px;
+            background-color: rgb(141, 31, 31);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.8s ease all;
+        }
+
+        .removeDB:hover {
+            background-color: white;
+            color: rgb(141, 31, 31);
+        }
+
+        .listOfDB {
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            color: blue;
+            text-decoration: underline;
+            padding: 10px;
+        }
+
+        #dbs {
+            cursor: pointer;
+        }
+
+        #col {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="db">
+        <div class="nav">
+            <div class="wybranaBaza navText">
+                <p>Bierząca baza danych / </p>
+                <p class="wybranaBaza" id="wybranaBaza">nie wybrano</p>
+            </div>
+            <div>
+                <button class="addDB" onclick="addDB()">dodaj bazę danych</button>
+                <button class="removeDB" onclick="delDB()">usuń bieżącą</button>
+            </div>
+        </div>
+        <div class="listOfDB" id="DBList">
+        </div>
+    </div>
+    <div class="col">
+        <div class="nav">
+            <div class="wybranaBaza navText">
+                <p>bieżąca kolekcja / </p>
+                <p class="wybranaKolekcja" id="wybranaKolekcja">nie wybrano</p>
+            </div>
+            <div>
+                <button class="addDB" onclick="addDB()">dodaj kolekcję</button>
+                <button class="removeDB" onclick="delDB()">usuń kolekcję</button>
+            </div>
+        </div>
+        <div class="listOfCol" id="listOfCol">
+        </div>
+    </div>
+    <script>
+        let dbs = []
+        let cols = []
+        let server = prompt("Podaj nazwę servera z którym połączyć", "localhost")
+        document.addEventListener("load", show())
+        let selectedDB = ""
+        let selectedCol = ''
+
+        function show() {
+            const body = JSON.stringify({ server: server })
+            console.log(body)
+            const headers = { "Content-Type": "application/json" } // nagłowek czyli typ danych
+            fetch("/connect", { method: "post", body, headers }) // fetch
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data) // dane odpowiedzi z serwera
+                    data.forEach(db => {
+                        dbs.push(db)
+                        createElement(db)
+                    })
+
+                }
+                )
+        }
+
+        function addDB() {
+            const newDB = prompt("Podaj nazwę nowej bazy danych:", 'tak')
+            const body = JSON.stringify({ newDB: newDB })
+            const headers = { "Content-Type": "application/json" } // nagłowek czyli typ danych
+            fetch("/addDB", { method: "post", body, headers }) // fetch
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data) // dane odpowiedzi z serwera
+                    if (!dbs.includes(data.newDB)) {
+                        dbs.push(data.newDB)
+                        createElement(data.newDB)
+                    }
+                })
+
+        }
+        function delDB() {
+            const body = JSON.stringify({ delDB: selectedDB })
+            const headers = { "Content-Type": "application/json" } // nagłowek czyli typ danych
+            fetch("/delDB", { method: "post", body, headers }) // fetch
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data) // dane odpowiedzi z serwera
+                    dbs = []
+                    document.getElementById('DBList').innerHTML = ''
+                    data.forEach(db => {
+                        dbs.push(db)
+                        createElement(db)
+                    })
+                })
+        }
+
+        function createElement(db) {
+            list = document.getElementById('DBList')
+            li = document.createElement('div')
+            li.innerHTML = db
+            li.setAttribute("id", "dbs")
+            li.setAttribute("value", db)
+            li.addEventListener("click", e => {
+                const clickedDB = e.target
+                selectedDB = clickedDB.getAttribute("value")
+                document.getElementById('wybranaBaza').innerText = selectedDB
+                console.log(selectedDB)
+                showCols()
+            })
+            list.appendChild(li)
+        }
+
+        function showCols() {
+            const body = JSON.stringify({ currentDB: selectedDB })
+            const headers = { "Content-Type": "application/json" }
+            fetch("/showCols", { method: "post", body, headers }) // fetch
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data) // dane odpowiedzi z serwera
+                    document.getElementById('listOfCol').innerHTML = ''
+                    data.forEach(col => {
+                        cols.push(col)
+                        createCols(col)
+                    })
+                })
+        }
+
+        function createCols(col) {
+            list = document.getElementById('listOfCol')
+            li = document.createElement('div')
+            li.innerHTML = col
+            li.setAttribute("id", "col")
+            li.setAttribute("value", col)
+            li.addEventListener("click", e => {
+                const clickedCol = e.target
+                selectedCol = clickedCol.getAttribute("value")
+                document.getElementById('wybranaKolekcja').innerText = selectedCol
+                console.log(selectedCol)
+            })
+            list.appendChild(li)
+        }
+
+    </script>
+</body>
+
+</html>
