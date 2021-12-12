@@ -44,6 +44,7 @@ module.exports = {
     addCol: function (db, newCol) {
         db.createCollection(newCol, function (err, coll) {
             console.log(coll, " were added")
+            console.log("kutas kozła")
         })
     },
 

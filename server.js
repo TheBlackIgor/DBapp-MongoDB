@@ -50,7 +50,6 @@ app.post('/delDB', function (req, res) {
 
 app.post("/showCols", function (req, res) {
     currentDB = req.body.currentDB
-    const col = req.body.col
     console.log(req.body);
     showCols(req, res)
 })

@@ -215,7 +215,7 @@
                 .then(data => {
                     console.log(data) // dane odpowiedzi z serwera
                     if (!cols.includes(data.newCol)) {
-                        dbs.push(data.newCol)
+                        cols.push(data.newCol)
                         createCols(data.newCol)
                     }
                 })
