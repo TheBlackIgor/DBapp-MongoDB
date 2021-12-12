@@ -55,6 +55,18 @@ app.post("/showCols", function (req, res) {
     showCols(req, res)
 })
 
+app.post('/addCol', function (req, res) {
+    const newCol = req.body.newCol
+    console.log(newCol)
+    mongoClient.connect("mongodb://" + server + "/" + currentDB, function (err, db) {
+        if (err) console.log("nie działa :(")
+        else {
+            opers.addCol(db, newCol)
+            res.end(JSON.stringify({ newCol: newCol }))
+        }
+    })
+})
+
 app.listen(PORT, function () {
     console.log("start serwera na porcie " + PORT)
 })

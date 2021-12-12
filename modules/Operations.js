@@ -27,11 +27,6 @@ module.exports = {
             }
         });
     },
-    addDB: function (db) {
-        db.createCollection("defaultCol", function (err, coll) {
-            console.log(coll.name, "defaultCol were added")
-        })
-    },
 
     delDB: function (db) {
         db.dropDatabase(function (err, res) {
@@ -40,6 +35,17 @@ module.exports = {
         })
     },
 
+    addDB: function (db) {
+        db.createCollection("defaultCol", function (err, coll) {
+            console.log(coll.name, "defaultCol were added")
+        })
+    },
+
+    addCol: function (db, newCol) {
+        db.createCollection(newCol, function (err, coll) {
+            console.log(coll, " were added")
+        })
+    },
 
 
 }

@@ -157,7 +157,6 @@
                         createElement(data.newDB)
                     }
                 })
-
         }
         function delDB() {
             const body = JSON.stringify({ delDB: selectedDB })
@@ -185,7 +184,6 @@
                 const clickedDB = e.target
                 selectedDB = clickedDB.getAttribute("value")
                 document.getElementById('wybranaBaza').innerText = selectedDB
-                console.log(selectedDB)
                 showCols()
             })
             list.appendChild(li)
@@ -197,12 +195,29 @@
             fetch("/showCols", { method: "post", body, headers }) // fetch
                 .then(response => response.json())
                 .then(data => {
+                    cols = []
                     console.log(data) // dane odpowiedzi z serwera
                     document.getElementById('listOfCol').innerHTML = ''
                     data.forEach(col => {
                         cols.push(col)
                         createCols(col)
                     })
+                })
+        }
+
+        function addCol() {
+            const newCol = prompt("Podaj nazwę nowej kolekcji:", 'newCol')
+            const body = JSON.stringify({ newCol: newCol })
+            console.log(newCol)
+            const headers = { "Content-Type": "application/json" } // nagłowek czyli typ danych
+            fetch("/addDB", { method: "post", body, headers }) // fetch
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data) // dane odpowiedzi z serwera
+                    if (!cols.includes(data.newCol)) {
+                        dbs.push(data.newCol)
+                        createCols(data.newCol)
+                    }
                 })
         }
 
