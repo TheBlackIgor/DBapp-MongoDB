@@ -210,7 +210,7 @@
             const body = JSON.stringify({ newCol: newCol })
             console.log(newCol)
             const headers = { "Content-Type": "application/json" } // nagłowek czyli typ danych
-            fetch("/addDB", { method: "post", body, headers }) // fetch
+            fetch("/addCol", { method: "post", body, headers }) // fetch
                 .then(response => response.json())
                 .then(data => {
                     console.log(data) // dane odpowiedzi z serwera
@@ -218,6 +218,21 @@
                         cols.push(data.newCol)
                         createCols(data.newCol)
                     }
+                })
+        }
+        function delCol() {
+            const body = JSON.stringify({ delCol: selectedCol })
+            const headers = { "Content-Type": "application/json" } // nagłowek czyli typ danych
+            fetch("/delCol", { method: "post", body, headers }) // fetch
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data) // dane odpowiedzi z serwera
+                    cols = []
+                    document.getElementById('listOfCol').innerHTML = ''
+                    data.forEach(col => {
+                        cols.push(col)
+                        createCols(col)
+                    })
                 })
         }
 

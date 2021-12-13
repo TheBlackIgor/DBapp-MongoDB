@@ -37,16 +37,23 @@ module.exports = {
 
     addDB: function (db) {
         db.createCollection("defaultCol", function (err, coll) {
-            console.log(coll.name, "defaultCol were added")
+            console.log("defaultCol were added")
         })
     },
 
     addCol: function (db, newCol) {
         db.createCollection(newCol, function (err, coll) {
             console.log(coll, " were added")
-            console.log("kutas kozła")
         })
     },
+    delCol: function (db, col) {
+        console.log(col)
+        db.collection(col).drop(function (err, delOK) {
+            if (err) throw err
+            else console.log(`powiedzmy że ${col} została usunięta`)
+            db.close()
+        })
 
+    },
 
 }

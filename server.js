@@ -65,6 +65,16 @@ app.post('/addCol', function (req, res) {
         }
     })
 })
+app.post('/delCol', function (req, res) {
+    const delCol = req.body.delCol
+    mongoClient.connect("mongodb://" + server + "/" + currentDB, function (err, db) {
+        if (err) console.log("nie działa :(")
+        else {
+            opers.delCol(db, delCol)
+        }
+    })
+    showCols(req, res)
+})
 
 app.listen(PORT, function () {
     console.log("start serwera na porcie " + PORT)
@@ -96,6 +106,7 @@ function showCols(req, res) {
             _db = db;
             console.log("Db - " + currentDB)
             opers.showCol(db, function (list) {
+                console.log(list)
                 res.end(JSON.stringify(list))
             })
         }
