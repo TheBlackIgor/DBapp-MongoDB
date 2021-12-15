@@ -31,7 +31,7 @@ module.exports = {
     delDB: function (db) {
         db.dropDatabase(function (err, res) {
             if (err) console.log(err)
-            db.close()
+            console.log(db + " - usunięto")
         })
     },
 
@@ -51,7 +51,6 @@ module.exports = {
         db.collection(col).drop(function (err, delOK) {
             if (err) throw err
             else console.log(`powiedzmy że ${col} została usunięta`)
-            db.close()
         })
 
     },

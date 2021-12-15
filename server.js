@@ -8,6 +8,7 @@ const opers = require("./modules/Operations.js")
 var formidable = require('formidable');
 app.use(express.json());
 console.log(opers)
+app.use(express.static(__dirname + '/public'));
 
 let _db;
 let server
