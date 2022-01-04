@@ -6,7 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="/fontawesome/css/all.css" rel="stylesheet">
     <style>
         body {
             font-family: sans-serif;
@@ -14,16 +15,33 @@
             font-weight: 500;
             display: flex;
             flex-direction: row;
-            justify-content: space-between;
+            justify-content: start;
             margin: 0;
+            color: white;
+            overflow: hidden;
         }
 
-        .db,
-        .col {
-            width: 50%;
+        .db {
+            width: 300px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+            background-color: rgb(24, 24, 24);
+            height: 100vh;
+            padding: 10px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+
+        .col {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            color: rgb(255, 255, 255);
+            background-color: rgb(42, 42, 42);
+            overflow-y: scroll;
+            overflow-x: hidden;
         }
 
         .nav {
@@ -38,7 +56,8 @@
 
         .wybranaBaza {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
+            height: 50px;
         }
 
         .addDB {
@@ -75,7 +94,14 @@
             display: flex;
             flex-direction: column;
             justify-content: start;
-            color: blue;
+            text-decoration: underline;
+            padding: 10px;
+        }
+
+        .listOfCol {
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
             text-decoration: underline;
             padding: 10px;
         }
@@ -94,8 +120,8 @@
     <div class="db">
         <div class="nav">
             <div class="wybranaBaza navText">
-                <p>Bierząca baza danych / </p>
-                <p class="wybranaBaza" id="wybranaBaza">nie wybrano</p>
+                <div>Bierząca baza danych / </div>
+                <div class="wybranaBaza" id="wybranaBaza">nie wybrano</div>
             </div>
             <div>
                 <button class="addDB" onclick="addDB()">dodaj bazę danych</button>
@@ -108,8 +134,8 @@
     <div class="col">
         <div class="nav">
             <div class="wybranaBaza navText">
-                <p>bieżąca kolekcja / </p>
-                <p class="wybranaKolekcja" id="wybranaKolekcja">nie wybrano</p>
+                <div>bieżąca kolekcja / </div>
+                <div class="wybranaKolekcja" id="wybranaKolekcja">nie wybrano</div>
             </div>
             <div>
                 <button class="addDB" onclick="addCol()">dodaj kolekcję</button>
@@ -119,10 +145,24 @@
         <div class="listOfCol" id="listOfCol">
         </div>
     </div>
+    <div class="doc">
+        <div class="nav">
+            <div class="dodaneDocumenty navText">
+                <div>Dokumenty: </div>
+                <div class="docList" id="docList"></div>
+            </div>
+            <div>
+                <button class="addDoc" onclick="addDoc()">dodaj kolekcję</button>
+                <button class="removeDoc" onclick="delDoc()">usuń kolekcję</button>
+            </div>
+        </div>
+        <div class="listOfDoc" id="listOfDoc">
+        </div>
+    </div>
     <script>
         let dbs = []
         let cols = []
-        let server = prompt("Podaj nazwę servera z którym połączyć", "127.0.0.1x")
+        let server = prompt("Podaj nazwę servera z którym połączyć", "192.168.1.100")
         document.addEventListener("load", show())
         let selectedDB = ""
         let selectedCol = ''
@@ -167,6 +207,9 @@
                     console.log(data) // dane odpowiedzi z serwera
                     dbs = []
                     document.getElementById('DBList').innerHTML = ''
+                    document.getElementById('wybranaBaza').innerHTML = 'Nie wybrano'
+                    document.getElementById('listOfCol').innerHTML = ''
+                    document.getElementById('wybranaKolekcja').innerHTML = 'Nie wybrano'
                     data.forEach(db => {
                         dbs.push(db)
                         createElement(db)
@@ -175,18 +218,20 @@
         }
 
         function createElement(db) {
-            list = document.getElementById('DBList')
-            li = document.createElement('div')
-            li.innerHTML = db
-            li.setAttribute("id", "dbs")
-            li.setAttribute("value", db)
-            li.addEventListener("click", e => {
-                const clickedDB = e.target
-                selectedDB = clickedDB.getAttribute("value")
-                document.getElementById('wybranaBaza').innerText = selectedDB
-                showCols()
-            })
-            list.appendChild(li)
+            if (db != null) {
+                list = document.getElementById('DBList')
+                li = document.createElement('div')
+                li.innerHTML = `<i class="fas fa-database"></i> ${db}`
+                li.setAttribute("id", "dbs")
+                li.setAttribute("value", db)
+                li.addEventListener("click", e => {
+                    const clickedDB = e.target
+                    selectedDB = clickedDB.getAttribute("value")
+                    document.getElementById('wybranaBaza').innerHTML = selectedDB
+                    showCols()
+                })
+                list.appendChild(li)
+            }
         }
 
         function showCols() {
@@ -229,6 +274,7 @@
                     console.log(data) // dane odpowiedzi z serwera
                     cols = []
                     document.getElementById('listOfCol').innerHTML = ''
+                    documnet.getElementById('wybranaKolekcja').innerText = 'Nie wybrano'
                     data.forEach(col => {
                         cols.push(col)
                         createCols(col)
@@ -239,13 +285,13 @@
         function createCols(col) {
             list = document.getElementById('listOfCol')
             li = document.createElement('div')
-            li.innerHTML = col
+            li.innerHTML = '<i class="fas fa-columns"></i> ' + col
             li.setAttribute("id", "col")
             li.setAttribute("value", col)
             li.addEventListener("click", e => {
                 const clickedCol = e.target
                 selectedCol = clickedCol.getAttribute("value")
-                document.getElementById('wybranaKolekcja').innerText = selectedCol
+                document.getElementById('wybranaKolekcja').innerHTML = selectedCol
                 console.log(selectedCol)
             })
             list.appendChild(li)

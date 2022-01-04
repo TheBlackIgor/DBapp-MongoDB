@@ -23,6 +23,7 @@ app.get("/", function (req, res) {
 
 app.post("/connect", function (req, res) {
     server = req.body.server
+    server = "grupa2:NS6M63mGpdfr45tg@SG-klasa3p-48609.servers.mongodirector.com:27017/"
     console.log(req.body);
     console.log("connecting...")
     setDBs(req, res)
