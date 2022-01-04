@@ -52,9 +52,7 @@
         </div>
 
         <div class="addDoc" id="addDoc" style="display: none;">
-            <div class="newDoc" id="newDoc" contenteditable="true">
-                {}
-            </div>
+            <div class="newDoc" id="newDoc" contenteditable="true">{}</div>
             <button class="saveDoc" onclick="createDoc()">dodaj dokument</button>
             <button class="removeDB" onclick="cancelNewDoc()">anuluj</button>
         </div>
@@ -208,20 +206,20 @@
             li = document.createElement('div')
             li.setAttribute("id", doc._id)
             li.setAttribute("class", "ddoc")
-            let json = JSON.stringify(doc, null, 6).replace(/\n( *)/g, function (match, p1) {
-                return "<br>" + "&nbsp;".repeat(p1.length);
-            });
+            let json = JSON.stringify(doc, null, 5)
+            //let json = JSON.stringify(doc, null, 6).replace(/\n( *)/g, function (match, p1) {
+            //    return "<br>" + "&nbsp;".repeat(p1.length);
+            //});
             li.innerHTML =
-                `<div class="pdoc" id="content" contenteditable="false">
-            ${json}
-        </div>
+                `<div class="pdoc" id="content" contenteditable="false">${json}</div>
+        <button class="saveDoc" onclick="editDoc('${doc._id}')">edytuj</button>
         <button class="removeDB" onclick="delDoc('${doc._id}')">usuń</button>
-        <button class="saveDoc" onclick="editDoc('${doc._id}'')">edytuj</button>
         `
             list.appendChild(li)
         }
 
         function showDocs() {
+            document.getElementById("listOfDoc").innerHTML = "Loading"
             document.getElementById("docAdress").innerText = `Documenty: / ${selectedDB} / ${selectedCol}`
             const body = JSON.stringify({ currentCol: selectedCol })
             const headers = { "Content-Type": "application/json" }
@@ -262,22 +260,33 @@
             fetch("/delDoc", { method: "post", body, headers }) // fetch
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById("listOfDoc").innerHTML = "Loading"
                     showDocs()
                 })
         }
-        function editDoc(doc) {
+        function editDoc(idToEdit) {
+            li = document.getElementById(idToEdit)
+            let content = li.querySelector("#content")
 
+            li.innerHTML =
+                `<div class="newDoc" id="editedContent" contenteditable="true">${content.innerText}</div>
+        <button class="saveDoc" onclick="handleEdit('${idToEdit}')">akceptuj</button>
+        <button class="removeDB" onclick="showDocs()">anuluj</button>
+        `
         }
-        function handleEdit(doc) {
-            const body = JSON.stringify({ docToEdit: doc })
-            const headers = { "Content-Type": "application/json" }
-            fetch("/editDoc", { method: "post", body, headers }) // fetch
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("listOfDoc").innerHTML = "Loading"
-                    showDocs()
-                })
+        function handleEdit(idToEdit) {
+            try {
+                const docToEdit = document.querySelector('#editedContent')
+                const json = JSON.parse(docToEdit.innerText)
+                const body = JSON.stringify({ obj: json, id: idToEdit })
+                const headers = { "Content-Type": "application/json" }
+                fetch("/editDoc", { method: "post", body, headers }) // fetch
+                    .then(response => response.json())
+                    .then(data => {
+                        showDocs()
+                    })
+            } catch {
+                alert("Zła składnia jsona")
+            }
         }
     </script>
 </body>

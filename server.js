@@ -113,14 +113,19 @@ app.post("/delDoc", function (req, res) {
 })
 
 app.post("/editDoc", function (req, res) {
-    const idToEdit = req.body.docToEdit
-    console.log(idToDel, "nowy objekt")
+    console.log(req.body)
+    const idToEdit = req.body.id
+    const obj = req.body.obj
     mongoClient.connect("mongodb://" + server + "/" + currentDB, function (err, db) {
         if (err) console.log("nie działa :(")
         else {
-            opers.delDoc(db, currentCol, ObjectID(idToDel), () => {
-                console.log("deleted doc")
-                showDocs(req, res)
+            opers.delDoc(db, currentCol, ObjectID(idToEdit), () => {
+                console.log("del")
+                opers.addDoc(db, currentCol, obj, () => {
+                    console.log("add")
+                    console.log("edit")
+                    showDocs(req, res)
+                })
             })
         }
     })
