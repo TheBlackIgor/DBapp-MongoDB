@@ -10,9 +10,12 @@ app.use(express.json());
 console.log(opers)
 
 let _db;
-let server
+let server = "grupa2:NS6M63mGpdfr45tg@SG-klasa3p-48609.servers.mongodirector.com:27017"
+//let server = "localhost"
 let list
-let currentDB
+let currentDB = "grupa2"
+// let currentDB = "SwierczynskiIgor"
+let currentCol
 
 app.use(express.static('static'))
 
@@ -22,8 +25,6 @@ app.get("/", function (req, res) {
 
 
 app.post("/connect", function (req, res) {
-    server = req.body.server
-    server = "grupa2:NS6M63mGpdfr45tg@SG-klasa3p-48609.servers.mongodirector.com:27017/"
     console.log(req.body);
     console.log("connecting...")
     setDBs(req, res)
@@ -77,12 +78,61 @@ app.post('/delCol', function (req, res) {
     showCols(req, res)
 })
 
+app.post("/showDocs", function (req, res) {
+    currentCol = req.body.currentCol
+    showDocs(req, res)
+})
+app.post("/addDoc", function (req, res) {
+    let newObj = JSON.parse(JSON.stringify(req.body, null, 5))
+    newObj._id = ObjectID(newObj._id)
+    console.log(newObj, "nowy objekt")
+    mongoClient.connect("mongodb://" + server + "/" + currentDB, function (err, db) {
+        if (err) console.log("nie działa :(")
+        else {
+            opers.addDoc(db, currentCol, newObj, () => {
+                console.log("created doc")
+                showDocs(req, res)
+            })
+        }
+    })
+
+})
+
+app.post("/delDoc", function (req, res) {
+    const idToDel = req.body.docToDel
+    console.log(idToDel, "nowy objekt")
+    mongoClient.connect("mongodb://" + server + "/" + currentDB, function (err, db) {
+        if (err) console.log("nie działa :(")
+        else {
+            opers.delDoc(db, currentCol, ObjectID(idToDel), () => {
+                console.log("deleted doc")
+                showDocs(req, res)
+            })
+        }
+    })
+})
+
+app.post("/editDoc", function (req, res) {
+    const idToEdit = req.body.docToEdit
+    console.log(idToDel, "nowy objekt")
+    mongoClient.connect("mongodb://" + server + "/" + currentDB, function (err, db) {
+        if (err) console.log("nie działa :(")
+        else {
+            opers.delDoc(db, currentCol, ObjectID(idToDel), () => {
+                console.log("deleted doc")
+                showDocs(req, res)
+            })
+        }
+    })
+})
+
 app.listen(PORT, function () {
     console.log("start serwera na porcie " + PORT)
 })
 
 function setDBs(req, res) {
-    mongoClient.connect("mongodb://" + server + "/IgorSwierczynski", function (err, db) {
+    mongoClient.connect("mongodb://" + server + "/" + currentDB, function (err, db) {
+        //mongoClient.connect("mongodb://grupa2:NS6M63mGpdfr45tg@SG-klasa3p-48609.servers.mongodirector.com:27017/grupa2", function (err, db) {
         if (err) {
             const list = "error"
             res.end(JSON.stringify(list, null, 5))
@@ -109,6 +159,23 @@ function showCols(req, res) {
             opers.showCol(db, function (list) {
                 console.log(list)
                 res.end(JSON.stringify(list))
+            })
+        }
+    })
+}
+function showDocs(req, res) {
+    let docsList = []
+    mongoClient.connect("mongodb://" + server + "/" + currentDB, function (err, db) {
+        if (err) {
+            const list = "error"
+            res.end(JSON.stringify(list, null, 5))
+        }
+        else {
+            _db = db;
+            console.log("Col - " + currentCol)
+            opers.showDocs(db, currentCol, function (docsList) {
+                console.log(docsList)
+                res.end(JSON.stringify(docsList))
             })
         }
     })
