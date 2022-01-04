@@ -169,7 +169,7 @@
                 .then(data => {
                     cols = []
                     document.getElementById('listOfCol').innerHTML = ''
-                    documnet.getElementById('wybranaKolekcja').innerText = 'Nie wybrano'
+                    document.getElementById('wybranaKolekcja').innerText = 'Nie wybrano'
                     data.forEach(col => {
                         cols.push(col)
                         createCols(col)
@@ -208,13 +208,15 @@
             li = document.createElement('div')
             li.setAttribute("id", doc._id)
             li.setAttribute("class", "ddoc")
-
+            let json = JSON.stringify(doc, null, 6).replace(/\n( *)/g, function (match, p1) {
+                return "<br>" + "&nbsp;".repeat(p1.length);
+            });
             li.innerHTML =
                 `<div class="pdoc" id="content" contenteditable="false">
-            ${JSON.stringify(doc, null, 5)}
+            ${json}
         </div>
-        <button class="removeDB" onclick='delDoc(${doc._id})'>usuń</button>
-        <button class="saveDoc" onclick="editDoc(${doc._id})">edytuj</button>
+        <button class="removeDB" onclick="delDoc('${doc._id}')">usuń</button>
+        <button class="saveDoc" onclick="editDoc('${doc._id}'')">edytuj</button>
         `
             list.appendChild(li)
         }
@@ -265,6 +267,9 @@
                 })
         }
         function editDoc(doc) {
+
+        }
+        function handleEdit(doc) {
             const body = JSON.stringify({ docToEdit: doc })
             const headers = { "Content-Type": "application/json" }
             fetch("/editDoc", { method: "post", body, headers }) // fetch
