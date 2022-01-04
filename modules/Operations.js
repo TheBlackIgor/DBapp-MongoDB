@@ -54,5 +54,28 @@ module.exports = {
         })
 
     },
+    addDoc: function (db, col, obj, callback) {
+        db.collection(col).insertOne(obj, function (err, res) {
+            if (err) throw err;
+            else {
+                console.log("created doc")
+                callback()
+            }
+        })
+    },
+    showDocs: function (db, col, callback) {
+        db.collection(col).find({}).toArray(function (err, res) {
+            callback(res)
+        })
+    },
+    delDoc: function (db, col, id, callback) {
+        db.collection(col).deleteOne({ "_id": id }, function (err, res) {
+            if (err) throw err;
+            else {
+                console.log("created doc")
+                callback()
+            }
+        })
+    }
 
 }
