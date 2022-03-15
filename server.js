@@ -13,7 +13,7 @@ let _db;
 let server = "grupa2:NS6M63mGpdfr45tg@SG-klasa3p-48609.servers.mongodirector.com:27017"
 //let server = "localhost"
 let list
-let currentDB = "grupa2"
+let currentDB = ""
 // let currentDB = "SwierczynskiIgor"
 let currentCol
 
@@ -27,6 +27,7 @@ app.get("/", function (req, res) {
 app.post("/connect", function (req, res) {
     console.log(req.body);
     console.log("connecting...")
+    server = req.body
     setDBs(req, res)
 })
 app.post('/addDB', function (req, res) {

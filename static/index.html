@@ -63,13 +63,13 @@
     <script>
         let dbs = []
         let cols = []
-        //let server = prompt("Podaj nazwę servera z którym połączyć", "localhost")
+        let server = prompt("Podaj nazwę servera z którym połączyć", "localhost")
         document.addEventListener("load", show())
         let selectedDB = ""
         let selectedCol = ''
 
         function show() {
-            const body = JSON.stringify({ server: "tak" })
+            const body = JSON.stringify({ server: server })
             const headers = { "Content-Type": "application/json" } // nagłowek czyli typ danych
             fetch("/connect", { method: "post", body, headers }) // fetch
                 .then(response => response.json())
